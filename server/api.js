@@ -6,8 +6,8 @@ const SECRET_KEY = "SHsj3h8s3&vhgto3d8";
 
 const initializeAPI = async (app) => {
   db = await initializeDatabase();
-  app.get("/api/feed", getFeed);
-  app.post("/api/feed", postTweet);
+  app.get("/api/feed", getFeed, authenticateToken);
+  app.post("/api/feed", postTweet, authenticateToken);
   app.post("/api/login", login);
 };
 
@@ -31,5 +31,22 @@ const login = async (req, res) => {
     res.json({ token });
   }
 };
+
+const authenticateToken = (req, res, next) => {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader ? authHeader.split(" ")[1]: null;
+  if (!token) {
+    res.status(401).json({ message: "No token provided" });
+    return
+  }
+  jwt.verify(token, SECRET_KEY, (err, user) => {
+    if (err) {
+      res.status(401).json({ message: "Invalid token" });
+      return
+    }
+    req.user = user
+    next()
+  })
+}
 
 module.exports = { initializeAPI };
