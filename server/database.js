@@ -1,4 +1,6 @@
 const sqlite3 = require("sqlite3").verbose();
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
 
 const tweetsTableExists =
   "SELECT name FROM sqlite_master WHERE type='table' AND name='tweets'";
@@ -34,10 +36,22 @@ const initializeDatabase = async () => {
     db.get(usersTableExists, [], async (err, row) => {
       if (err) return console.error(err.message);
       if (!row) {
-        db.run(createUsersTable, [], async (err) => {
+        db.run(createUsersTable, [], (err) => {
           if (err) return console.error(err.message);
-          db.run(seedUsersTable);
-        });
+        
+          const passwordHash = bcrypt.hashSync('123456', saltRounds);
+          const seedUsers = [
+            { username: 'switzerchees', password: passwordHash },
+            { username: 'john', password: passwordHash },
+            { username: 'jane', password: passwordHash },
+          ];
+        
+          seedUsers.forEach((user) => {
+            db.run(`INSERT INTO users (username, password) VALUES (?, ?)`, [user.username, user.password], (err) => {
+              if (err) console.error(err.message);
+            });
+          });
+        });        
       }
     });
   });
@@ -54,9 +68,9 @@ const insertDB = (db, query) => {
   });
 };
 
-const queryDB = (db, query) => {
+const queryDB = (db, query, params = []) => {
   return new Promise((resolve, reject) => {
-    db.all(query, [], (err, rows) => {
+    db.all(query, params, (err, rows) => {
       if (err) return reject(err);
       resolve(rows);
     });

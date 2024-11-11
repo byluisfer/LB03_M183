@@ -1,5 +1,6 @@
 const { initializeDatabase, queryDB, insertDB } = require("./database");
 const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
 
 let db;
 const SECRET_KEY = "SHsj3h8s3&vhgto3d8";
@@ -24,11 +25,18 @@ const postTweet = (req, res) => {
 
 const login = async (req, res) => {
   const { username, password } = req.body;
-  const query = `SELECT * FROM users WHERE username = '${username}' AND password = '${password}'`;
-  const user = await queryDB(db, query);
-  if (user.length === 1) {
-    const token = jwt.sign({ username }, SECRET_KEY, { expiresIn: "1h" });
-    res.json({ token });
+  const query = `SELECT * FROM users WHERE username = ?`;
+  const users = await queryDB(db, query, [username]);
+
+  if (users.length === 1) {
+    const user = users[0];
+    const passwordMatch = await bcrypt.compare(password, user.password);
+    if (passwordMatch) {
+      const token = jwt.sign({ username }, SECRET_KEY, { expiresIn: "1h" });
+      res.json({ token });
+    } else {
+      res.status(401).json({ message: "Invalid password or username" });
+    }
   }
 };
 
