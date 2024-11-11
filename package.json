@@ -1,0 +1,16 @@
+{
+  "name": "m183-minitwitter",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": {
+    "name": "Patrick Michel"
+  },
+  "scripts": {
+    "start": "node server/app.js"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "sqlite3": "^5.1.6"
+  }
+}

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mini Twitter</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="/scripts/index.js"></script>
+  </head>
+  <body
+    class="flex flex-col w-screen h-screen gap-3 text-white bg-slate-800 items-center"
+  >
+    <header
+      class="flex items-center justify-between flex-shrink-0 pt-3 h-14 w-full max-w-4xl"
+    >
+      <h1 class="text-2xl font-bold">💬 Mini Twitter</h1>
+      <button id="logout" class="px-4 py-2 bg-red-500 hover:bg-red-400 rounded">
+        Logout
+      </button>
+    </header>
+    <div class="gap-2 flex w-full max-w-4xl">
+      <input
+        id="new-tweet"
+        placeholder="What are you thinking about?"
+        type="text"
+        class="w-full p-2 px-4 bg-slate-400 rounded grow placeholder-gray-200"
+      />
+      <button
+        id="post-tweet"
+        class="px-4 py-2 bg-green-500 hover:bg-green-400 rounded"
+      >
+        Post
+      </button>
+    </div>
+    <main class="flex flex-col grow max-w-4xl w-full gap-2 overflow-y-auto">
+      <div class="flex flex-col grow gap-2">
+        <h2 class="font-semibold self-center">Feed</h2>
+        <div id="feed" class="flex flex-col gap-2 w-full"></div>
+      </div>
+    </main>
+    <footer class="flex items-center justify-center flex-shrink-0 h-14">
+      <p>Made with ❤️ and a lot of ☕️ by SwitzerChees</p>
+    </footer>
+  </body>
+</html>
