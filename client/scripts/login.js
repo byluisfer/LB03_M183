@@ -7,6 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
   loginButton.addEventListener("click", async () => {
     const username = usernameInput.value;
     const password = passwordInput.value;
+
     const response = await fetch("/api/login", {
       method: "POST",
       headers: {
@@ -14,12 +15,13 @@ document.addEventListener("DOMContentLoaded", () => {
       },
       body: JSON.stringify({ username, password }),
     });
+
     const data = await response.json();
-    if (data?.username) {
+    if (response.ok) {
       localStorage.setItem("user", JSON.stringify(data));
       window.location.href = "/";
     } else {
-      errorText.innerText = data;
+      error.indexText.innerText = data.message;
     }
   });
 });

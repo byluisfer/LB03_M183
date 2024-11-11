@@ -1,6 +1,8 @@
 const { initializeDatabase, queryDB, insertDB } = require("./database");
+const jwt = require("jsonwebtoken");
 
 let db;
+const SECRET_KEY = "SHsj3h8s3&vhgto3d8";
 
 const initializeAPI = async (app) => {
   db = await initializeDatabase();
@@ -25,9 +27,8 @@ const login = async (req, res) => {
   const query = `SELECT * FROM users WHERE username = '${username}' AND password = '${password}'`;
   const user = await queryDB(db, query);
   if (user.length === 1) {
-    res.json(user[0]);
-  } else {
-    res.json(null);
+    const token = jwt.sign({ username }, SECRET_KEY, { expiresIn: "1h" });
+    res.json({ token });
   }
 };
 
