@@ -4,6 +4,7 @@ const { initializeAPI } = require("./api");
 
 // Create the express server
 const app = express();
+app.disable("x-powered-by");
 app.use(express.json());
 const server = http.createServer(app);
 
