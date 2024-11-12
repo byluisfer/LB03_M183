@@ -1,9 +1,10 @@
 const { initializeDatabase, queryDB, insertDB } = require("./database");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+require("dotenv").config();
 
 let db;
-const SECRET_KEY = "SHsj3h8s3&vhgto3d8";
+const SECRET_KEY = process.env.SECRET_KEY;
 
 const initializeAPI = async (app) => {
   db = await initializeDatabase();
