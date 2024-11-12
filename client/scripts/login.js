@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const data = await response.json();
     if (response.ok) {
-      localStorage.setItem("user", JSON.stringify(data));
+      localStorage.setItem("user", JSON.stringify({ username, token: data.token }));
       window.location.href = "/";
     } else {
       error.indexText.innerText = data.message;

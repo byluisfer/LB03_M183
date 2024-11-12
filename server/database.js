@@ -59,11 +59,11 @@ const initializeDatabase = async () => {
   return db;
 };
 
-const insertDB = (db, query) => {
+const insertDB = (db, query, params = []) => {
   return new Promise((resolve, reject) => {
-    db.run(query, [], (err, rows) => {
+    db.run(query, params, function (err) {
       if (err) return reject(err);
-      resolve(rows);
+      resolve(this.lastID);
     });
   });
 };

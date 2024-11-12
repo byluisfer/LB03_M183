@@ -8,8 +8,8 @@ const SECRET_KEY = process.env.SECRET_KEY;
 
 const initializeAPI = async (app) => {
   db = await initializeDatabase();
-  app.get("/api/feed", getFeed, authenticateToken);
-  app.post("/api/feed", postTweet, authenticateToken);
+  app.get("/api/feed", authenticateToken, getFeed);
+  app.post("/api/feed", authenticateToken, postTweet);
   app.post("/api/login", login);
 };
 
@@ -20,8 +20,18 @@ const getFeed = async (req, res) => {
 };
 
 const postTweet = (req, res) => {
-  insertDB(db, req.body.query);
-  res.json({ status: "ok" });
+  const { text } = req.body;
+  const username = req.user.username;
+  if (!text || text.trim() === "") {
+    return res.status(400).json({ message: "Text in the tweet is required" });
+  }
+  const query = `INSERT INTO tweets (username, timestamp, text) VALUES (?, datetime('now'), ?)`;
+  try {
+    insertDB(db, query, [username, text]);
+    res.json({ status: "ok" });
+  } catch (err) {
+    console.error(err);
+  }
 };
 
 const login = async (req, res) => {
