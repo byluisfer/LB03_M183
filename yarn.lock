@@ -337,6 +337,11 @@ etag@~1.8.1:
   resolved "https://registry.npmjs.org/etag/-/etag-1.8.1.tgz"
   integrity sha512-aIL5Fx7mawVa300al2BnEE4iNvo1qETxLrPI/o05L7z6go7fCw1J6EQmbK4FmJ2AS7kgVF/KEZWufBfdClMcPg==
 
+express-rate-limit@^7.4.1:
+  version "7.4.1"
+  resolved "https://registry.npmjs.org/express-rate-limit/-/express-rate-limit-7.4.1.tgz"
+  integrity sha512-KS3efpnpIDVIXopMc65EMbWbUht7qvTCdtCR2dD/IZmi9MIkopYESwyRqLgv8Pfu589+KqDqOdzJWW7AHoACeg==
+
 express-validator@^7.2.0:
   version "7.2.0"
   resolved "https://registry.npmjs.org/express-validator/-/express-validator-7.2.0.tgz"
@@ -345,7 +350,7 @@ express-validator@^7.2.0:
     lodash "^4.17.21"
     validator "~13.12.0"
 
-express@^4.18.2:
+express@^4.18.2, "express@4 || 5 || ^5.0.0-beta.1":
   version "4.18.2"
   resolved "https://registry.npmjs.org/express/-/express-4.18.2.tgz"
   integrity sha512-5/PsL6iGPdfQ/lKM1UuielYgv3BUoJfz1aUwU9vHZ+J7gyvwdQXFEBIEIaxeGf0GIcreATNyBExtalisDbuMqQ==

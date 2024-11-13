@@ -2,6 +2,7 @@ const { initializeDatabase, queryDB, insertDB } = require("./database");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
+const { rateLimit } = require("express-rate-limit");
 require("dotenv").config();
 
 let db;
@@ -27,11 +28,17 @@ const escapeHTML = (text) => {
   return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
 }
 
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 20, // limit each IP to 20 requests per windowMs
+  message: "Too many requests from this IP, please try again after 15 minutes",
+})
+
 const initializeAPI = async (app) => {
   db = await initializeDatabase();
   app.get("/api/feed", authenticateToken, getFeed);
   app.post("/api/feed", authenticateToken, postTweet);
-  app.post("/api/login", login);
+  app.post("/api/login", limiter, login);
 };
 
 const getFeed = async (req, res) => {
