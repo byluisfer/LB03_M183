@@ -23,6 +23,10 @@ const decrypt = (text) => {
   return decrypted;
 }
 
+const escapeHTML = (text) => {
+  return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+}
+
 const initializeAPI = async (app) => {
   db = await initializeDatabase();
   app.get("/api/feed", authenticateToken, getFeed);
@@ -35,7 +39,7 @@ const getFeed = async (req, res) => {
   const tweets = await queryDB(db, query);
   const decryptedTweets = tweets.map((tweet) => ({
     ...tweet,
-    text: decrypt(tweet.text),
+    text: escapeHTML(decrypt(tweet.text)),
   }));
   res.json(decryptedTweets);
 };
