@@ -1,10 +1,27 @@
 const { initializeDatabase, queryDB, insertDB } = require("./database");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+const crypto = require("crypto");
 require("dotenv").config();
 
 let db;
 const SECRET_KEY = process.env.SECRET_KEY;
+const key = Buffer.from(process.env.KEY, "utf8");
+const iv = Buffer.from(process.env.IV, "utf8");
+
+const encrypt = (text) => {
+  const cipher = crypto.createCipheriv("aes-128-cbc", key, iv);
+  let encrypted = cipher.update(text, "utf8", "hex");
+  encrypted += cipher.final("hex");
+  return encrypted;
+}
+
+const decrypt = (text) => {
+  const decipher = crypto.createDecipheriv("aes-128-cbc", key, iv);
+  let decrypted = decipher.update(text, "hex", "utf8");
+  decrypted += decipher.final("utf8");
+  return decrypted;
+}
 
 const initializeAPI = async (app) => {
   db = await initializeDatabase();
@@ -14,20 +31,27 @@ const initializeAPI = async (app) => {
 };
 
 const getFeed = async (req, res) => {
-  const query = req.query.q;
+  const query = `SELECT * FROM tweets`;
   const tweets = await queryDB(db, query);
-  res.json(tweets);
+  const decryptedTweets = tweets.map((tweet) => ({
+    ...tweet,
+    text: decrypt(tweet.text),
+  }));
+  res.json(decryptedTweets);
 };
 
 const postTweet = (req, res) => {
   const { text } = req.body;
   const username = req.user.username;
+
   if (!text || text.trim() === "") {
     return res.status(400).json({ message: "Text in the tweet is required" });
   }
+
+  const encryptedText = encrypt(text);
   const query = `INSERT INTO tweets (username, timestamp, text) VALUES (?, datetime('now'), ?)`;
   try {
-    insertDB(db, query, [username, text]);
+    insertDB(db, query, [username, encryptedText]);
     res.json({ status: "ok" });
   } catch (err) {
     console.error(err);
