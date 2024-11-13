@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
 const { rateLimit } = require("express-rate-limit");
+const { log } = require("console");
 require("dotenv").config();
 
 let db;
@@ -34,6 +35,13 @@ const limiter = rateLimit({
   message: "Too many requests from this IP, please try again after 15 minutes",
 })
 
+const logActivity = (req, res) => {
+  const timestamp = new Date().toISOString();
+  const user = req.user  ? req.user.username : req.body.username || "Not logged in";
+  const logEntry = `${user} made ${req.method} on ${req.url} at ${timestamp}`;
+  console.log(logEntry);
+}
+
 const initializeAPI = async (app) => {
   db = await initializeDatabase();
   app.get("/api/feed", authenticateToken, getFeed);
@@ -42,6 +50,7 @@ const initializeAPI = async (app) => {
 };
 
 const getFeed = async (req, res) => {
+  logActivity(req, "Accessed to feed");
   const query = `SELECT * FROM tweets`;
   const tweets = await queryDB(db, query);
   const decryptedTweets = tweets.map((tweet) => ({
@@ -52,6 +61,7 @@ const getFeed = async (req, res) => {
 };
 
 const postTweet = (req, res) => {
+  logActivity(req, "Posted a tweet");
   const { text } = req.body;
   const username = req.user.username;
 
@@ -71,6 +81,7 @@ const postTweet = (req, res) => {
 
 const login = async (req, res) => {
   const { username, password } = req.body;
+  logActivity(req, "Try to login");
   const query = `SELECT * FROM users WHERE username = ?`;
   const users = await queryDB(db, query, [username]);
 
@@ -79,8 +90,10 @@ const login = async (req, res) => {
     const passwordMatch = await bcrypt.compare(password, user.password);
     if (passwordMatch) {
       const token = jwt.sign({ username }, SECRET_KEY, { expiresIn: "1h" });
+      logActivity(req, "Login successful");
       res.json({ token });
     } else {
+      logActivity(req, "Login failed");
       res.status(401).json({ message: "Invalid password or username" });
     }
   }
